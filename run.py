@@ -25,7 +25,7 @@ def add_submodule(name, check_file='.travis.yml'):
 add_submodule('bottle')
 add_submodule('waitress')
 import bottle, waitress
-bottle.TEMPLATE_PATH.append('web')
+bottle.TEMPLATE_PATH.append(abspath('web'))
 
 class WaitressAdapter(bottle.WaitressServer):
     def run(self, handler):
