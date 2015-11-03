@@ -8,6 +8,8 @@
         <link rel="stylesheet" href="/static/main.css" />
         <script src="/static/jquery.js"></script>
         <script src="/static/bootstrap.min.js"></script>
+        <script src="/static/jquery.validate.min.js"></script>
+        <script src="/static/form.js"></script>
         <link rel="icon" type="image/x-icon" href="/static/icon.ico" />
     </head>
     <body>
