@@ -1,8 +1,18 @@
-import os, subprocess, sys, threading, time, webbrowser
+import argparse, os, subprocess, sys, threading, time, webbrowser
 if sys.version[0] == '2':
     from urllib2 import urlopen
 else:
     from urllib.request import urlopen
+
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument('-?', '--help', action='help')
+parser.add_argument('-h', '--host', default='0.0.0.0')
+parser.add_argument('-p', '--port', type=int, default=8000)
+parser.add_argument('-n', '--no-open', action='store_true', help="Don't open a web browser")
+parser.add_argument('-r', '--reload', action='store_true', help="Reload changed files automatically")
+parser.add_argument('-d', '--debug', action='store_true')
+args = parser.parse_args()
+sys.sf_args = args
 
 import util
 util.logging_init()
@@ -34,7 +44,7 @@ class WaitressAdapter(bottle.WaitressServer):
 
 def server_running():
     try:
-        c = urlopen('http://localhost:8000/test').read()
+        c = urlopen('http://localhost:%i/test' % (args.port)).read()
         if c == '1' or c == b'1':
             return True
     except Exception:
@@ -42,9 +52,9 @@ def server_running():
     return False
 
 def open_page():
-    if '--no-open' in sys.argv:
+    if args.no_open:
         return
-    webbrowser.open('http://localhost:8000')
+    webbrowser.open('http://localhost:%i' % (args.port))
 
 if server_running():
     print('Server already running')
@@ -52,4 +62,4 @@ if server_running():
 else:
     print('Starting server')
     import web.server
-    web.server.main('0.0.0.0', 8000, WaitressAdapter)
+    web.server.main(args, WaitressAdapter)

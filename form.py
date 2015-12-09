@@ -1,6 +1,7 @@
 import inspect
 import os
 import string
+import sys
 
 _formatter = string.Formatter()
 
@@ -8,7 +9,7 @@ for singleton in ('left', 'right', 'center', 'top', 'bottom', 'middle'):
     globals()[singleton] = object()
 
 class Field(object):
-    raw_html = '''<div class="form-field {python_css_class_names} {css_class_names}" id="field-{id}">{html}</div>'''
+    raw_html = '''<div class="form-field {python_css_class_names} {css_class_names}" id="field-{id}" {html_data_attrs}>{html}</div>'''
 
     def __getitem__(self, k):
         return getattr(self, k, '{%s}' % k)
@@ -18,7 +19,8 @@ class Field(object):
         return type(cls) is type and \
                 cls is not Field and \
                 issubclass(cls, Field) and \
-                hasattr(cls, 'title')
+                hasattr(cls, 'title') and \
+                len(cls.__bases__) == 1
 
     @classmethod
     def class_id(cls):
@@ -39,6 +41,17 @@ class Field(object):
     def python_css_class_names(self):
         return ' '.join(list(map(lambda cls: 'py-%s' % cls.__name__.lower(),
             filter(lambda cls: issubclass(cls, Field), inspect.getmro(self.__class__)))))
+
+    @property
+    def html_data_attrs(self):
+        out = []
+        for a in dir(self.__class__):
+            if not hasattr(self.__class__.__bases__[0], a):
+                out.append('data-%s="%s"' % (
+                    a.replace('_', '-'),
+                    str(getattr(self, a)).replace('"', '&quot;')
+                ))
+        return ' '.join(out)
 
     def format(self, s):
         return _formatter.vformat(s, (), self)
@@ -63,16 +76,25 @@ class TextField(Field):
 class NumberField(TextField):
     input_type = 'number'
 
+class IntegerField(NumberField):
+    pass
 
 class FormRenderer(object):
-    def __init__(self, fields_path):
+    def __init__(self, fields_path, reload=False):
         self.fields = {}
+        self.fields_path = fields_path
+        self.fields_mtime = -1
+        self.reload = reload
+        self.read()
+
+    def read(self):
         env = {}
         for k, v in globals().items():
             if not k.startswith('_'):
                 env[k] = v
-        with open(fields_path) as f:
+        with open(self.fields_path) as f:
             exec(f.read(), env, env)
+        self.fields_mtime = os.path.getmtime(self.fields_path)
         for k, v in env.items():
             if type(v) is type and issubclass(v, Field) and v.can_create():
                 self.fields[k] = v()
@@ -89,6 +111,10 @@ class FormRenderer(object):
             raise IOError("Couldn't find stdout")
         stdout.append(self.fields[field_id].get_html())
 
-_renderer = FormRenderer(os.path.join(os.getcwd(), '..', 'web', 'fields.py'))
-render_field = _renderer.field_html
+    def render_field(self, *args, **kwargs):
+        if self.reload and os.path.getmtime(self.fields_path) != self.fields_mtime:
+            self.read()
+        return self.field_html(*args, **kwargs)
 
+_renderer = FormRenderer(os.path.join(os.getcwd(), '..', 'web', 'fields.py'), sys.sf_args.reload)
+render_field = _renderer.render_field

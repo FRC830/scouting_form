@@ -35,7 +35,7 @@ def callback():
 def callback(path):
     return static_file(path, 'static')
 
-def main(host, port, adapter):
+def main(args, adapter):
     app = bottle.app()
-    app.run(host=host, port=port, debug=True, server=adapter,
-        reloader=('--reload' in sys.argv), quiet=True)
+    app.run(host=args.host, port=args.port, debug=args.debug, server=adapter,
+        reloader=args.reload, quiet=True)
