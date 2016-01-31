@@ -1,4 +1,4 @@
-import argparse, os, subprocess, sys, threading, time, webbrowser
+import argparse, os, random, subprocess, sys, threading, time, webbrowser
 if sys.version[0] == '2':
     from urllib2 import urlopen
 else:
@@ -21,11 +21,28 @@ cwd = os.getcwd()
 def abspath(*parts):
     return os.path.abspath(os.path.join(cwd, *parts))
 
+sk_path = '.secret_key.data'
+if not os.path.isfile(sk_path):
+    with open(sk_path, 'wb') as f:
+        f.write(str(random.getrandbits(2000)))
+
 import flask
+import jinja2
 app = flask.Flask("Scouting Form",
     static_folder=abspath('static'),
-    static_url_path='/static',
-    template_folder=abspath('web'))
+    static_url_path='/static'
+)
+# Load templates from scouting_form/web and scouting_form/../web
+# http://stackoverflow.com/questions/13598363
+app.jinja_loader = jinja2.ChoiceLoader([
+    app.jinja_loader,
+    jinja2.FileSystemLoader([
+        abspath('web'),
+        abspath('..', 'web'),
+    ]),
+])
+with open(sk_path, 'rb') as f:
+    app.secret_key = f.read()
 flask.current_app = app
 import server
 
@@ -52,7 +69,7 @@ def main(*_):
     elif not args.no_open:
         print('Web browser support disabled with --reload')
     print('Starting server')
-    app.run(host=args.host, port=args.port, use_reloader=args.reload)
+    app.run(host=args.host, port=args.port, use_reloader=args.reload, debug=args.debug)
 
 class OpenThread(threading.Thread):
     # If the main thread fails, this should stop waiting for the server to appear
