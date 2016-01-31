@@ -12,35 +12,22 @@ parser.add_argument('-n', '--no-open', action='store_true', help="Don't open a w
 parser.add_argument('-r', '--reload', action='store_true', help="Reload changed files automatically")
 parser.add_argument('-d', '--debug', action='store_true')
 args = parser.parse_args()
-sys.sf_args = args
 
 import util
 util.logging_init()
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+cwd = os.getcwd()
 def abspath(*parts):
-    return os.path.join(os.getcwd(), *parts)
+    return os.path.abspath(os.path.join(cwd, *parts))
 
-def add_submodule(name, check_file='.travis.yml'):
-    sys.path.append(abspath('depends', name))
-    if not os.path.exists(abspath('depends', name, check_file)):
-        print('Warning: submodules not initialized properly')
-        try:
-            err = subprocess.call(['git', 'submodule', 'update', '--init'])
-            assert not err, 'git error'
-        except Exception as e:
-            print('Failed to update submodules: %s' % e)
-            sys.exit(1)
-
-add_submodule('bottle')
-add_submodule('waitress')
-import bottle, waitress
-bottle.TEMPLATE_PATH.extend([abspath('..', 'web'), abspath('web')])
-
-class WaitressAdapter(bottle.WaitressServer):
-    def run(self, handler):
-        open_page()
-        waitress.serve(handler, host=self.host, port=self.port, threads=6)
+import flask
+app = flask.Flask("Scouting Form",
+    static_folder=abspath('static'),
+    static_url_path='/static',
+    template_folder=abspath('web'))
+flask.current_app = app
+import server
 
 def server_running():
     try:
@@ -54,12 +41,32 @@ def server_running():
 def open_page():
     if args.no_open:
         return
-    webbrowser.open('http://localhost:%i' % (args.port))
+    if not os.environ.get('_SF_OPENED'):
+        webbrowser.open('http://localhost:%i' % (args.port))
+    os.environ['_SF_OPENED'] = '1'
 
-if server_running():
-    print('Server already running')
-    open_page()
-else:
+def main(*_):
+    # with the reloader active, this will run multiple times
+    if not args.reload:
+        OpenThread().start()
+    elif not args.no_open:
+        print('Web browser support disabled with --reload')
     print('Starting server')
-    import web.server
-    web.server.main(args, WaitressAdapter)
+    app.run(host=args.host, port=args.port, use_reloader=args.reload)
+
+class OpenThread(threading.Thread):
+    # If the main thread fails, this should stop waiting for the server to appear
+    daemon = True
+    def run(self):
+        timeout = 10
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            if server_running():
+                print('Found server')
+                open_page()
+                return
+            time.sleep(1)
+        print('Could not find server')
+
+if __name__ == '__main__':
+    main()

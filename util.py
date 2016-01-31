@@ -20,3 +20,10 @@ class LoggingWrapper:
 def logging_init():
     sys.stdout = LoggingWrapper(sys.stdout)
     sys.stderr = LoggingWrapper(sys.stderr)
+
+def exec_file(path, env=None):
+    if env is None:
+        env = {}
+    with open(path) as f:
+        exec(compile(f.read(), path, 'exec'), env, env)
+    return env
