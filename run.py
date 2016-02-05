@@ -42,7 +42,6 @@ app.jinja_loader = jinja2.ChoiceLoader([
     ]),
 ])
 
-print(abspath('web'))
 with open(sk_path, 'rb') as f:
     app.secret_key = f.read()
 flask.current_app = app
