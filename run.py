@@ -24,7 +24,7 @@ def abspath(*parts):
 sk_path = '.secret_key.data'
 if not os.path.isfile(sk_path):
     with open(sk_path, 'wb') as f:
-        f.write(str(random.getrandbits(2000)))
+        f.write(str(random.getrandbits(2000)).encode())
 
 import flask
 import jinja2
@@ -41,6 +41,8 @@ app.jinja_loader = jinja2.ChoiceLoader([
         abspath('..', 'web'),
     ]),
 ])
+
+print(abspath('web'))
 with open(sk_path, 'rb') as f:
     app.secret_key = f.read()
 flask.current_app = app
