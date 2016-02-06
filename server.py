@@ -6,6 +6,9 @@ app = flask.current_app
 @app.route('/static/<path:path>')
 def static_(path):
     return static_file(path, 'static')
+@app.route('/')
+def root():
+    return flask.redirect(flask.url_for('form'))
 
 @app.route('/test')
 def test():
