@@ -3,9 +3,9 @@ import flask
 import form_helper
 app = flask.current_app
 
-@app.route('/static/<path:path>')
-def static_(path):
-    return static_file(path, 'static')
+custom = flask.Blueprint('custom', 'custom', static_url_path='/static/custom', static_folder=os.path.join('..', 'web'))
+app.register_blueprint(custom)
+
 @app.route('/')
 def root():
     return flask.redirect(flask.url_for('form'))
