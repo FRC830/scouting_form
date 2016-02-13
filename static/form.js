@@ -5,4 +5,12 @@ $(function() {
     $('#scouting-form').on('submit', function() {
         localStorage.setItem('last_match_id',$('#match_id').val());
     });
+    //Allow input boxes to be changed with arrow keys
+    $("input[type='text']").keydown(function(e){
+    	if(e.keyCode == 38){
+    		this.value = parseInt(this.value)+1;
+    	} else if (e.keyCode == 40){
+    		this.value = parseInt(this.value)-1;
+    	}
+    });
 });
