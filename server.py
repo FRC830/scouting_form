@@ -1,4 +1,5 @@
 import os
+import exporter
 import flask
 import form_helper
 app = flask.current_app
@@ -19,5 +20,6 @@ def form():
     f = form_helper.load_form(os.path.join(os.getcwd(), '..', 'web', 'fields.py'))()
     if f.validate_on_submit():
         print(f.data)
+        exporter.save_data(f.data, os.path.join(os.getcwd(), '..', 'save.txt'))
         return flask.redirect('/form')
     return flask.render_template('form.html', form=f)
