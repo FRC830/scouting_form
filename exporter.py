@@ -1,36 +1,10 @@
 import csv, os, threading
 
-fields = [
-	"match_id",
-    "team_id",
-    "auton_start",
-    "auton_breach",
-    "auton_score",
-    "lb_breach",
-    "pc_breach",
-    "cf_breach",
-    "mo_breach",
-    "rp_breach",
-    "db_breach",
-    "sp_breach",
-    "rw_breach",
-    "rt_breach",
-    "breach_count",
-    "high_scores",
-    "high_misses",
-    "low_scores",
-    "fouls",
-    "tech_fouls",
-    "defense",
-    "hang",
-    "comments"
-]
-
 def getlines(f):
 	return list(filter(len, map(lambda line: line.rstrip('\r\n'), f.readlines())))
 
 _export_lock = threading.Lock()
-def save_data(data, path):
+def save_data(fields, data, path):
     with _export_lock:
         add_headers = False
         if not os.path.exists(path):
