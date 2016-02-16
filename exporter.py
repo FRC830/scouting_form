@@ -31,9 +31,3 @@ def save_data(fields, data, path):
             with open(path, 'w') as f:
                 f.write('\n'.join(lines[:-1]))
                 f.write('\n')
-
-def process(data):
-    for f in fields:
-        if f not in data:
-            data[f] = 0
-    return data
