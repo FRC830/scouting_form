@@ -26,7 +26,14 @@ if not os.path.isfile(sk_path):
     with open(sk_path, 'wb') as f:
         f.write(str(random.getrandbits(2000)).encode())
 
-import flask
+try:
+    import flask
+except ImportError:
+    print('Module Flask not found... installing with pip')
+    import pip
+    pip.install('requirements.txt','user') #something like this, needs confiming
+    import flask
+
 import jinja2
 app = flask.Flask("Scouting Form",
     static_folder=abspath('static'),
