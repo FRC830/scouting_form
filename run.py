@@ -31,7 +31,7 @@ try:
 except ImportError:
     print('Module Flask not found... installing with pip')
     import pip
-    pip.install('requirements.txt','user') #something like this, needs confiming
+    pip.main('install', '-r', 'requirements.txt', '--user')
     import flask
 
 import jinja2
