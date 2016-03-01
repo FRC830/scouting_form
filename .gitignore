@@ -55,3 +55,4 @@ target/
 *.csv
 _log.txt
 *.data
+packages.zip

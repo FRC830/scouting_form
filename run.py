@@ -26,6 +26,7 @@ if not os.path.isfile(sk_path):
     with open(sk_path, 'wb') as f:
         f.write(str(random.getrandbits(2000)).encode())
 
+sys.path.append(abspath('packages.zip'))
 try:
     import flask
 except ImportError:
