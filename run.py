@@ -17,9 +17,8 @@ import util
 util.logging_init()
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-cwd = os.getcwd()
-def abspath(*parts):
-    return os.path.abspath(os.path.join(cwd, *parts))
+util.cwd = os.getcwd()
+abspath = util.abspath
 
 sk_path = '.secret_key.data'
 if not os.path.isfile(sk_path):

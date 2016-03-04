@@ -1,4 +1,8 @@
-import sys, threading, time
+import os, sys, threading, time
+
+cwd = os.getcwd()
+def abspath(*parts):
+    return os.path.abspath(os.path.join(cwd, *parts))
 
 class LoggingWrapper:
     def __init__(self, fd):

@@ -56,3 +56,4 @@ target/
 _log.txt
 *.data
 packages.zip
+config.txt
