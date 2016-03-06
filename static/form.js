@@ -8,7 +8,7 @@ $(function() {
 
     //Add +/- buttons next to input fields so it is easy on touchscreen
     function mkbutton() {
-        return $('<a>').attr('href', '#').addClass('btn btn-default').click(function(e){e.preventDefault();});
+        return $('<a>').attr('href', '#').addClass('btn btn-default input-group-addon').click(function(e){e.preventDefault();});
     }
     $('input[type=number]').each(function(i, e) {
         var increment = function(n) {
@@ -19,9 +19,5 @@ $(function() {
         }
         var button_inc = mkbutton().text('+').insertAfter($(e)).click(increment(1));
         var button_dec = mkbutton().text('-').insertBefore($(e)).click(increment(-1));
-        var width = 8;
-        var height = 15;
-        button_inc.width(width).height(height);
-        button_dec.width(width).height(height);
     });
 });
