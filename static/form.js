@@ -5,20 +5,12 @@ $(function() {
     $('#scouting-form').on('submit', function() {
         localStorage.setItem('last_match_id',$('#match_id').val());
     });
-    //Allows input boxes to be changed with arrow keys
-    $("input[type='text']").keydown(function(e){
-    	if(e.keyCode == 38){
-    		this.value = parseInt(this.value)+1;
-    	} else if (e.keyCode == 40){
-    		this.value = parseInt(this.value)-1;
-    	}
-    });
 
     //Add +/- buttons next to input fields so it is easy on touchscreen
     function mkbutton() {
         return $('<a>').attr('href', '#').addClass('btn btn-default').click(function(e){e.preventDefault();});
     }
-    $('input[type=text]').each(function(i, e) {
+    $('input[type=number]').each(function(i, e) {
         var increment = function(n) {
             return function() {
                 $(e).val(Number($(e).val()) + n);
