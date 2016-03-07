@@ -35,7 +35,7 @@ class IntegerInput(widgets.html5.NumberInput, CustomClassMixin):
         html = super(IntegerInput, self).__call__(field, **kwargs)
         return HTMLString('<span class="input-group">') + html + HTMLString('</span>')
 
-class BootstrapGridFieldMixin(Field, _BootstrapGridDefaults):
+class BootstrapGridField(Field, _BootstrapGridDefaults):
     def __init__(self, *args, **kwargs):
         # Copy col_* and label_col_* keyword arguments to the corresponding
         # attributes of this instance
@@ -43,7 +43,7 @@ class BootstrapGridFieldMixin(Field, _BootstrapGridDefaults):
             if hasattr(_BootstrapGridDefaults, k):
                 setattr(self, k, v)
                 del kwargs[k]
-        super(BootstrapGridFieldMixin, self).__init__(*args, **kwargs)
+        super(BootstrapGridField, self).__init__(*args, **kwargs)
 
     def __call__(self, **kwargs):
         classes = []
@@ -56,7 +56,10 @@ class BootstrapGridFieldMixin(Field, _BootstrapGridDefaults):
             if attr.startswith('label_col_') and value is not None:
                 label_classes.append('col-%s-%i' % (name, value))
 
-        html = super(BootstrapGridFieldMixin, self).__call__(**kwargs)
+        html = super(BootstrapGridField, self).__call__(**kwargs)
+        return self.generate_html(html, classes, label_classes)
+
+    def generate_html(self, html, classes, label_classes):
         return (HTMLString('<div class="%s">' % ' '.join(classes)) +
                 HTMLString('<div class="form-field">') +
                     self.label(class_ = ' '.join(label_classes)) +
@@ -64,5 +67,15 @@ class BootstrapGridFieldMixin(Field, _BootstrapGridDefaults):
                 HTMLString('</div>') +
             HTMLString('</div>'))
 
-class IntegerField(IntegerField, BootstrapGridFieldMixin):
+class IntegerField(IntegerField, BootstrapGridField):
     widget = IntegerInput()
+
+class CheckboxButtonField(BooleanField, BootstrapGridField):
+    def generate_html(self, html, classes, label_classes):
+        classes.extend(['btn-group', 'checkbox-button-field'])
+        return (HTMLString('<div class="%s" data-toggle="buttons">' % ' '.join(classes)) +
+                HTMLString('<label class="btn btn-default">') +
+                    html +
+                    HTMLString(self.label.text) +
+                HTMLString('</label>') +
+            HTMLString('</div>'))

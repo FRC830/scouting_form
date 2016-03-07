@@ -20,4 +20,10 @@ $(function() {
         var button_inc = mkbutton().text('+').insertAfter($(e)).click(increment(1));
         var button_dec = mkbutton().text('-').insertBefore($(e)).click(increment(-1));
     });
+    $('.checkbox-button-field input[type=checkbox]').change(function() {
+        var label = $(this).parent('label');
+        label.removeClass('btn-default btn-success').addClass(
+            $(this).prop('checked') ? 'btn-success' : 'btn-default'
+        );
+    });
 });
