@@ -39,7 +39,7 @@ class BootstrapGridField(Field, _BootstrapGridDefaults):
     def __init__(self, *args, **kwargs):
         # Copy col_* and label_col_* keyword arguments to the corresponding
         # attributes of this instance
-        for k, v in kwargs.items():
+        for k, v in list(kwargs.items()):
             if hasattr(_BootstrapGridDefaults, k):
                 setattr(self, k, v)
                 del kwargs[k]
