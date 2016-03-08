@@ -26,7 +26,7 @@ class _BootstrapGridDefaults:
     col_lg = None
     label_col_xs = 4
     label_col_sm = 4
-    label_col_md = None
+    label_col_md = 5
     label_col_lg = None
 
 class IntegerInput(widgets.html5.NumberInput, CustomClassMixin):
