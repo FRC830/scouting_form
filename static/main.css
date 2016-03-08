@@ -12,9 +12,6 @@ h3 {
     text-decoration: underline;
 }
 
-input[type=number] {
-    width: 5em;
-}
 label {
     text-align: left;
 }

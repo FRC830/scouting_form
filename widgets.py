@@ -30,18 +30,27 @@ class _BootstrapGridDefaults:
     label_col_lg = None
 
 class IntegerInput(widgets.html5.NumberInput, CustomClassMixin):
-    custom_classes = ['form-control']
+    def __init__(self, *args, **kwargs):
+        self.custom_classes = ['form-control']
+        self.buttons = kwargs.pop('buttons', True)
+        super(IntegerInput, self).__init__(*args, **kwargs)
+        if not self.buttons:
+            self.custom_classes.append('no-buttons')
     def __call__(self, field, **kwargs):
         html = super(IntegerInput, self).__call__(field, **kwargs)
         return HTMLString('<span class="input-group">') + html + HTMLString('</span>')
 
 class BootstrapGridField(Field, _BootstrapGridDefaults):
+    custom_classes = []
     def __init__(self, *args, **kwargs):
         # Copy col_* and label_col_* keyword arguments to the corresponding
         # attributes of this instance
         for k, v in list(kwargs.items()):
             if hasattr(_BootstrapGridDefaults, k):
                 setattr(self, k, v)
+                del kwargs[k]
+            elif k in ('class', 'class_'):
+                self.custom_classes.extend(k)
                 del kwargs[k]
         super(BootstrapGridField, self).__init__(*args, **kwargs)
 
@@ -57,7 +66,7 @@ class BootstrapGridField(Field, _BootstrapGridDefaults):
                 label_classes.append('col-%s-%i' % (name, value))
 
         html = super(BootstrapGridField, self).__call__(**kwargs)
-        return self.generate_html(html, classes, label_classes)
+        return self.generate_html(html, classes + self.custom_classes, label_classes)
 
     def generate_html(self, html, classes, label_classes):
         return (HTMLString('<div class="%s">' % ' '.join(classes)) +
@@ -68,7 +77,10 @@ class BootstrapGridField(Field, _BootstrapGridDefaults):
             HTMLString('</div>'))
 
 class IntegerField(IntegerField, BootstrapGridField):
-    widget = IntegerInput()
+    def __init__(self, *args, **kwargs):
+        buttons = kwargs.pop('buttons', True)
+        super(IntegerField, self).__init__(*args, **kwargs)
+        self.widget = IntegerInput(buttons=buttons)
 
 class CheckboxButtonField(BooleanField, BootstrapGridField):
     def generate_html(self, html, classes, label_classes):

@@ -11,6 +11,8 @@ $(function() {
         return $('<a>').attr('href', '#').addClass('btn btn-default input-group-addon').click(function(e){e.preventDefault();});
     }
     $('input[type=number]').each(function(i, e) {
+        if ($(e).hasClass('no-buttons'))
+            return;
         var increment = function(n) {
             return function() {
                 $(e).val(Number($(e).val()) + n);
