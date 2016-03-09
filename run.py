@@ -77,7 +77,8 @@ def main(*_):
     elif not args.no_open:
         print('Web browser support disabled with --reload')
     print('Starting server')
-    app.run(host=args.host, port=args.port, use_reloader=args.reload, debug=args.debug)
+    app.run(host=args.host, port=args.port, use_reloader=args.reload, debug=args.debug,
+        threaded=False)
 
 class OpenThread(threading.Thread):
     # If the main thread fails, this should stop waiting for the server to appear
