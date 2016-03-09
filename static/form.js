@@ -1,9 +1,34 @@
+function generateValidationRules(form) {
+    var rules = {};
+    form.find('input[type=number]').each(function(_, e) {
+        rules[$(e).attr('name')] = {
+            min: 0,
+            required: true,
+        };
+    });
+    return rules;
+}
+
 $(function() {
 	//This allows the Match ID field to be automatically filled
 	//based on the previous value entered + 1
     $('#match_id').val(Number(localStorage.getItem('last_match_id')) + 1);
     $('#scouting-form').on('submit', function() {
         localStorage.setItem('last_match_id',$('#match_id').val());
+    }).validate({
+        rules: generateValidationRules($('#scouting-form')),
+        highlight: function(element) {
+            $(element).closest('.form-field').addClass('has-error');
+        },
+        unhighlight: function(element) {
+            $(element).closest('.form-field').removeClass('has-error');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function(error, element) {
+            // disable messages
+            return true;
+        }
     });
 
     //Add +/- buttons next to input fields so it is easy on touchscreen
