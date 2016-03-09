@@ -1,7 +1,7 @@
 import csv, os, threading
 
 def getlines(f):
-	return list(filter(len, map(lambda line: line.rstrip('\r\n'), f.readlines())))
+    return list(filter(len, map(lambda line: line.rstrip('\r\n'), f.readlines())))
 
 _export_lock = threading.Lock()
 def save_data(fields, data, path):
