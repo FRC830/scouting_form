@@ -16,9 +16,10 @@ request = flask.request
 custom = flask.Blueprint('custom', 'custom', static_url_path='/static/custom', static_folder=os.path.join('..', 'web'))
 app.register_blueprint(custom)
 
-CSV_FILENAME = conf.get('computer_name', '')+"_scouting_data.csv"
+def csv_filename():
+    conf.get('computer_name', '')+"_scouting_data.csv"
 def csv_path():
-    return util.abspath('..',CSV_FILENAME)
+    return util.abspath('..',csv_filename())
 
 @app.route('/')
 def root():
@@ -68,7 +69,7 @@ def export_page():
 @app.route('/export/<command>')
 def export_handler(command):
     def path_ok(path):
-        return os.path.isdir(path) and not os.path.exists(os.path.join(path, CSV_FILENAME))
+        return os.path.isdir(path) and not os.path.exists(os.path.join(path, csv_filename()))
     path = os.path.expanduser(request.args.get('path', get_export_path()))
     if command == 'check_path':
         ok = path_ok(path)
@@ -80,8 +81,8 @@ def export_handler(command):
         if not path_ok(path):
             return flask.jsonify(ok=False, error="Invalid path: %s" % path)
         try:
-            shutil.copyfile(csv_path(), os.path.join(path, CSV_FILENAME))
-            shutil.move(csv_path(), util.abspath('backups', '%s-%s' % (CSV_FILENAME, time.strftime('%d-%b-%Y-%H-%M-%S-%p'))))
+            shutil.copyfile(csv_path(), os.path.join(path, csv_filename()))
+            shutil.move(csv_path(), util.abspath('backups', '%s-%s' % (csv_filename(), time.strftime('%d-%b-%Y-%H-%M-%S-%p'))))
             return flask.jsonify(ok=True)
         except Exception as e:
             return flask.jsonify(ok=False, error=str(e))
