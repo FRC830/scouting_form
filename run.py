@@ -32,6 +32,7 @@ try:
 except ImportError:
     try:
         urlretrieve('https://github.com/FRC830/scouting_form/releases/download/0.1/packages.zip', abspath('packages.zip'))
+        import flask
     except ImportError:
         print('Module Flask not found... installing with pip')
         import pip
