@@ -1,8 +1,8 @@
 import argparse, os, random, subprocess, sys, threading, time, webbrowser
 if sys.version[0] == '2':
-    from urllib2 import urlopen
+    from urllib2 import urlopen, urlretrieve
 else:
-    from urllib.request import urlopen
+    from urllib.request import urlopen, urlretrieve
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('-?', '--help', action='help')
@@ -29,10 +29,13 @@ sys.path.append(abspath('packages.zip'))
 try:
     import flask
 except ImportError:
-    print('Module Flask not found... installing with pip')
-    import pip
-    pip.main(['install', '-r', 'requirements.txt', '--user'])
-    import flask
+    try:
+        urlretrieve('https://github.com/FRC830/scouting_form/releases/download/0.1/packages.zip', abspath('packages.zip'))
+    except ImportError:
+        print('Module Flask not found... installing with pip')
+        import pip
+        pip.main(['install', '-r', 'requirements.txt', '--user'])
+        import flask
 
 import jinja2
 app = flask.Flask("Scouting Form",
