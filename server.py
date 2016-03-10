@@ -16,7 +16,7 @@ request = flask.request
 custom = flask.Blueprint('custom', 'custom', static_url_path='/static/custom', static_folder=os.path.join('..', 'web'))
 app.register_blueprint(custom)
 
-CSV_FILENAME = conf.get('computer_name')+"_scouting_data.csv"
+CSV_FILENAME = conf.get('computer_name', '')+"_scouting_data.csv"
 def csv_path():
     return util.abspath('..',CSV_FILENAME)
 
