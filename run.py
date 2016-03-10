@@ -54,6 +54,9 @@ with open(sk_path, 'rb') as f:
 flask.current_app = app
 import server
 
+if not os.path.isdir('backups'):
+    os.mkdir('backups')
+
 def server_running():
     try:
         c = urlopen('http://localhost:%i/test' % (args.port)).read()

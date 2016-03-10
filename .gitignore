@@ -57,3 +57,4 @@ _log.txt
 *.data
 packages.zip
 config.txt
+backups/

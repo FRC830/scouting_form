@@ -2,10 +2,12 @@ import flask
 import os
 import shutil
 import sys
+import time
 
 import config
 import exporter
 import form_helper
+import util
 conf = config.config
 
 app = flask.current_app
@@ -15,6 +17,8 @@ custom = flask.Blueprint('custom', 'custom', static_url_path='/static/custom', s
 app.register_blueprint(custom)
 
 CSV_FILENAME = conf.get('computer_name')+"_scouting_data.csv"
+def csv_path():
+    return util.abspath('..',CSV_FILENAME)
 
 @app.route('/')
 def root():
@@ -36,7 +40,7 @@ def form():
         for field in f:
             if field.type != "CSRFTokenField":
                 fieldnames.append(field.name)
-        exporter.save_data(fieldnames, f.data, os.path.join(os.getcwd(),'..', CSV_FILENAME))
+        exporter.save_data(fieldnames, f.data, csv_path())
         return flask.redirect('/form')
     return flask.render_template('form.html', form=f)
 
@@ -76,10 +80,20 @@ def export_handler(command):
         if not path_ok(path):
             return flask.jsonify(ok=False, error="Invalid path: %s" % path)
         try:
-            shutil.copyfile(os.path.join(os.getcwd(),'..', CSV_FILENAME),
-                os.path.join(path, CSV_FILENAME))
+            shutil.copyfile(csv_path(), os.path.join(path, CSV_FILENAME))
+            shutil.move(csv_path(), util.abspath('backups', '%s-%s' % (CSV_FILENAME, time.strftime('%d-%b-%Y-%H-%M-%S-%p'))))
             return flask.jsonify(ok=True)
         except Exception as e:
             return flask.jsonify(ok=False, error=str(e))
     else:
         flask.abort(404)
+
+@app.route('/stats')
+def stats():
+    lines = 0
+    if os.path.isfile(csv_path()):
+        with open(csv_path()) as f:
+            lines = max(0, len(f.readlines()) - 1)
+    return flask.jsonify(
+        lines=lines
+    )

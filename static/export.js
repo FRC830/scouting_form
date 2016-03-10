@@ -10,18 +10,31 @@ function checkPath() {
 }
 
 $(function(){
+    $.getJSON('/stats', function(data) {
+        $('#stats').text(data.lines + ' matches');
+        if (!data.lines) {
+            // ugly
+            switchStage('nothing');
+            $('#stage-nothing .alert').removeClass('alert-info').addClass('alert-warning').text('No data to export');
+            $('#path-row').hide();
+        }
+    });
     $('a[href^=#stage-]').click(function(e){
         e.preventDefault();
         switchStage($(this).attr('href').replace(/#stage\-/, ''));
     })
     $('#path').keydown(function(e){
         switchStage('nothing');
+        if (e.which == 13)
+            checkPath();
     });
     $('#check-path').click(checkPath);
     $('a[href=#stage-export]').click(function(){
         $.getJSON('/export/do_export', {path: $('#path').val()}, function(data){
-            if (data.ok)
+            if (data.ok) {
                 switchStage('success');
+                $('#path-row').hide();
+            }
             else
                 switchStage('failed', data.error);
         });
