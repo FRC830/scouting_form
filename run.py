@@ -1,6 +1,7 @@
 import argparse, os, random, subprocess, sys, threading, time, webbrowser
 if sys.version[0] == '2':
-    from urllib2 import urlopen, urlretrieve
+    from urllib2 import urlopen
+    from urllib import urlretrieve
 else:
     from urllib.request import urlopen, urlretrieve
 
