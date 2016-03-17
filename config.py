@@ -1,4 +1,5 @@
 import flask_wtf
+import itertools
 import os
 import wtforms.fields as fields
 from wtforms.validators import DataRequired
@@ -43,5 +44,10 @@ config = ConfigFile('config.txt')
 
 class ConfigForm(flask_wtf.Form):
     computer_name = fields.StringField('Computer name',
-        default=os.environ.get('COMPUTERNAME', None),
+        default=config.get('computer_name', None) or os.environ.get('COMPUTERNAME', None),
         validators=[DataRequired()])
+    station = fields.SelectField('Station',
+        choices=[(name, name) for name in
+            ['None'] + list(map(lambda item: ' '.join(map(str, item)),
+                itertools.product(['Red', 'Blue'], [1, 2, 3])))],
+        default=config.get('station', None))

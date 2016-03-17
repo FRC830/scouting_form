@@ -10,6 +10,9 @@ function generateValidationRules(form) {
 }
 
 $(function() {
+    // open links in a new window
+    if (location.pathname.indexOf('/form') == 0)
+        $('a[href^="/"]').attr('target','_blank');
 	//This allows the Match ID field to be automatically filled
 	//based on the previous value entered + 1
     if (!$('#match_id').val())

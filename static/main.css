@@ -5,11 +5,8 @@ body {
 div.content {
     background-color: white;
     border: 1px solid #ddd;
-    margin: 2em;
+    margin: 5em 2em 2em;
     padding: 1em;
-}
-h3 {
-    text-decoration: underline;
 }
 
 label {
@@ -44,10 +41,6 @@ label {
     padding-left: 1em;
 }
 
-li{
-    display: inline-block;
-    padding-right: 2em;
-}
 .game-period{
     border-top: 1px solid #bbb;
 }
