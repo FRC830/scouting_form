@@ -13,11 +13,6 @@ class CustomClassMixin(widgets.Input):
         kwargs['class'] = ' '.join([c] + self.custom_classes)
         return super(CustomClassMixin, self).__call__(field, **kwargs)
 
-# def custom_widget(widget_class, classes):
-#     class widget(widget_class, CustomClassMixin):
-#         custom_classes = list(classes)
-#     return widget()
-
 class _BootstrapGridDefaults:
     # This class is just used to give default attributes to BootstrapGridFieldMixin objects
     col_xs = 12
@@ -42,6 +37,8 @@ class IntegerInput(widgets.html5.NumberInput, CustomClassMixin):
 
 class BootstrapGridField(Field, _BootstrapGridDefaults):
     custom_classes = []
+    label_classes = []
+    field_classes = []
     def __init__(self, *args, **kwargs):
         # Copy col_* and label_col_* keyword arguments to the corresponding
         # attributes of this instance
@@ -53,10 +50,16 @@ class BootstrapGridField(Field, _BootstrapGridDefaults):
                 self.custom_classes.extend(k)
                 del kwargs[k]
         super(BootstrapGridField, self).__init__(*args, **kwargs)
+        self.custom_classes = self.custom_classes[:]
+        self.label_classes = self.label_classes[:]
+        self.field_classes = self.field_classes[:]
 
     def __call__(self, **kwargs):
-        classes = []
-        label_classes = []
+        classes = self.custom_classes[:]
+        label_classes = self.label_classes[:]
+        # Extend and filter out blank classes
+        field_classes = list(filter(bool, self.field_classes[:] +
+            [kwargs.pop('class', '') or kwargs.pop('class_', '') or None]))
         for attr in dir(_BootstrapGridDefaults):
             name = attr.split('_')[-1]
             value = getattr(self, attr)
@@ -65,16 +68,17 @@ class BootstrapGridField(Field, _BootstrapGridDefaults):
             if attr.startswith('label_col_') and value is not None:
                 label_classes.append('col-%s-%i' % (name, value))
 
+        kwargs['class'] = ' '.join(field_classes)
         html = super(BootstrapGridField, self).__call__(**kwargs)
-        return self.generate_html(html, classes + self.custom_classes, label_classes)
+        return HTMLString(self.generate_html(html, classes, label_classes))
 
     def generate_html(self, html, classes, label_classes):
-        return (HTMLString('<div class="%s">' % ' '.join(classes)) +
-                HTMLString('<div class="form-field">') +
+        return (('<div class="%s">' % ' '.join(classes)) +
+                '<div class="form-field">' +
                     self.label(class_ = ' '.join(label_classes)) +
                     html +
-                HTMLString('</div>') +
-            HTMLString('</div>'))
+                '</div>' +
+            '</div>')
 
 class IntegerField(IntegerField, BootstrapGridField):
     def __init__(self, *args, **kwargs):
@@ -85,9 +89,12 @@ class IntegerField(IntegerField, BootstrapGridField):
 class CheckboxButtonField(BooleanField, BootstrapGridField):
     def generate_html(self, html, classes, label_classes):
         classes.extend(['btn-group', 'checkbox-button-field'])
-        return (HTMLString('<div class="%s" data-toggle="buttons">' % ' '.join(classes)) +
-                HTMLString('<label class="btn btn-default">') +
+        return (('<div class="%s" data-toggle="buttons">' % ' '.join(classes)) +
+                '<label class="btn btn-default">' +
                     html +
-                    HTMLString(self.label.text) +
-                HTMLString('</label>') +
-            HTMLString('</div>'))
+                    self.label.text +
+                '</label>' +
+            '</div>')
+
+class TextAreaField(TextAreaField, BootstrapGridField):
+    field_classes = ['form-control']
