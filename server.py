@@ -16,8 +16,10 @@ request = flask.request
 custom = flask.Blueprint('custom', 'custom', static_url_path='/static/custom', static_folder=os.path.join('..', 'web'))
 app.register_blueprint(custom)
 
-def csv_filename():
-    return conf.get('computer_name', '')+"_scouting_data.csv"
+def csv_filename(use_id=False):
+    return conf.get('computer_name', '') + \
+        ('_' + conf.get('export_id', '1') if use_id else '') + \
+        "_scouting_data.csv"
 def csv_path():
     return util.abspath('..',csv_filename())
 
@@ -74,9 +76,17 @@ def export_form():
 @app.route('/export/<command>')
 def export_handler(command):
     def path_ok(path):
-        return os.path.isdir(path) and not os.path.exists(os.path.join(path, csv_filename()))
+        return os.path.isdir(path) and not os.path.exists(os.path.join(path, csv_filename(use_id=True)))
     path = os.path.expanduser(request.args.get('path', get_export_path()))
-    if command == 'check_path':
+    if command == 'info':
+        return flask.jsonify(
+            filename=csv_filename(use_id=True),
+            path=path,
+            default_path=get_export_path(),
+            ok=path_ok(path),
+            stats=stats(callback=dict),
+        )
+    elif command == 'check_path':
         ok = path_ok(path)
         if ok:
             conf.set('export_path', path)
@@ -86,8 +96,9 @@ def export_handler(command):
         if not path_ok(path):
             return flask.jsonify(ok=False, error="Invalid path: %s" % path)
         try:
-            shutil.copyfile(csv_path(), os.path.join(path, csv_filename()))
+            shutil.copyfile(csv_path(), os.path.join(path, csv_filename(use_id=True)))
             shutil.move(csv_path(), util.abspath('backups', '%s-%s' % (csv_filename(), time.strftime('%d-%b-%Y-%H-%M-%S-%p'))))
+            conf.set('export_id', conf.get('export_id', '1', type=int) + 1)
             return flask.jsonify(ok=True)
         except Exception as e:
             return flask.jsonify(ok=False, error=str(e))
@@ -95,11 +106,11 @@ def export_handler(command):
         flask.abort(404)
 
 @app.route('/stats')
-def stats():
+def stats(callback=None):
     lines = 0
     if os.path.isfile(csv_path()):
         with open(csv_path()) as f:
             lines = max(0, len(f.readlines()) - 1)
-    return flask.jsonify(
+    return (callback or flask.jsonify)(
         lines=lines
     )

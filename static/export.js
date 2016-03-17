@@ -10,9 +10,10 @@ function checkPath() {
 }
 
 $(function(){
-    $.getJSON('/stats', function(data) {
-        $('#stats').text(data.lines + ' matches');
-        if (!data.lines) {
+    $.getJSON('/export/info', function(data) {
+        var lines = data.stats.lines;
+        $('#stats > span').text(lines + ' match' + (lines == 1 ? '' : 'es') + ', exporting to ' + data.filename);
+        if (!data.stats.lines) {
             // ugly
             switchStage('nothing');
             $('#stage-nothing .alert').removeClass('alert-info').addClass('alert-warning').text('No data to export');

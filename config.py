@@ -12,6 +12,7 @@ except ImportError:
     from configparser import SafeConfigParser
 
 _none = object()
+_pass_thru = lambda x: x
 class ConfigFile:
     _section = 'config'
     def __init__(self, path):
@@ -22,19 +23,19 @@ class ConfigFile:
     def has(self, key):
         return self.parser.has_option(self._section, key)
 
-    def get(self, key, default=_none):
+    def get(self, key, default=_none, type=_pass_thru):
         try:
-            return self.parser.get(self._section, key)
+            return type(self.parser.get(self._section, key))
         except configparser.Error:
             if default is _none:
                 raise
             else:
-                return default
+                return type(default)
 
     def set(self, key, value):
         if self._section not in self.parser.sections():
             self.parser.add_section(self._section)
-        self.parser.set(self._section, key, value)
+        self.parser.set(self._section, key, str(value))
 
     def save(self):
         with open(self.path, 'w') as f:
@@ -44,10 +45,13 @@ config = ConfigFile('config.txt')
 
 class ConfigForm(flask_wtf.Form):
     computer_name = fields.StringField('Computer name',
-        default=config.get('computer_name', None) or os.environ.get('COMPUTERNAME', None),
+        default=lambda: config.get('computer_name', None) or os.environ.get('COMPUTERNAME', None),
+        validators=[DataRequired()])
+    export_id = fields.IntegerField('Export ID',
+        default=lambda: config.get('export_id', '1'),
         validators=[DataRequired()])
     station = fields.SelectField('Station',
         choices=[(name, name) for name in
             ['None'] + list(map(lambda item: ' '.join(map(str, item)),
                 itertools.product(['Red', 'Blue'], [1, 2, 3])))],
-        default=config.get('station', None))
+        default=lambda: config.get('station', None))
