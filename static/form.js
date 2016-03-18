@@ -68,7 +68,8 @@ $(function() {
 
     $.getJSON('/match-data', function(data) {
         if (data.error) {
-            $('form #alert').show().addClass('alert-danger').text(data.error);
+            if ($('form #alert').is(':hidden'))
+                $('form #alert').show().addClass('alert-danger').text(data.error);
             return;
         }
         match_data.data = data;
