@@ -4,6 +4,8 @@ import os
 import wtforms.fields as fields
 from wtforms.validators import DataRequired
 
+import util
+
 try:
     import ConfigParser as configparser
     from ConfigParser import SafeConfigParser
@@ -44,6 +46,15 @@ class ConfigFile:
 config = ConfigFile('config.txt')
 
 class ConfigForm(flask_wtf.Form):
+    def __init__(self, *args, **kwargs):
+        super(ConfigForm, self).__init__(*args, **kwargs)
+        match_names = [('', '')]
+        for f in os.listdir(util.abspath('match-data')):
+            name, ext = os.path.splitext(f)
+            if ext == '.json':
+                match_names.append((name, name))
+        self.match_name.choices = match_names
+
     computer_name = fields.StringField('Computer name',
         default=lambda: config.get('computer_name', None) or os.environ.get('COMPUTERNAME', None),
         validators=[DataRequired()])
@@ -55,3 +66,5 @@ class ConfigForm(flask_wtf.Form):
             ['None'] + list(map(lambda item: ' '.join(map(str, item)),
                 itertools.product(['Red', 'Blue'], [1, 2, 3])))],
         default=lambda: config.get('station', None))
+    match_name = fields.SelectField('Match name',
+        choices=[], default=lambda: config.get('match_name', ''))

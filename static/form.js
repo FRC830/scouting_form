@@ -9,7 +9,15 @@ function generateValidationRules(form) {
     return rules;
 }
 
+// allow custom, per-field validators
+// the validate plugin calls any functions it finds in rules, so it is necessary
+// to pass the custom function in a one-element array
+$.validator.addMethod('custom', function(value, element, callbacks) {
+    return callbacks[0](value, element);
+});
+
 $(function() {
+    var match_data = {data: {}, loaded: false};
     // open links in a new window
     if (location.pathname.indexOf('/form') == 0)
         $('a[href^="/"]').attr('target','_blank');
@@ -33,6 +41,39 @@ $(function() {
             // disable messages
             return true;
         }
+    });
+
+    $('#scouting-form #match_id').rules('add', {custom: [function(value){
+        return !(match_data.loaded && !(value in match_data.data));
+    }]});
+
+    $('#match_id').on('change keyup focus blur', function(){
+        if (!match_data.loaded)
+            return;
+        $('#team_id').val(match_data.data[$(this).val()] || '')
+            .change()
+            .valid();
+    });
+    $('#team_id').on('change keyup focus blur', function(){
+        if (!match_data.loaded)
+            return;
+        var expected = match_data.data[$('#match_id').val()];
+        if (!expected)
+            return;
+        if ($(this).val() == expected)
+            $('#alert').hide();
+        else
+            $('#alert').show().attr({'class': 'alert alert-warning'}).text('Team ID not set to ' + expected);
+    });
+
+    $.getJSON('/match-data', function(data) {
+        if (data.error) {
+            $('form #alert').show().addClass('alert-danger').text(data.error);
+            return;
+        }
+        match_data.data = data;
+        match_data.loaded = true;
+        $('#match_id').change();
     });
 
     //Add +/- buttons next to input fields so it is easy on touchscreen

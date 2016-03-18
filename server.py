@@ -1,4 +1,5 @@
 import flask
+import json
 import os
 import shutil
 import sys
@@ -114,3 +115,27 @@ def stats(callback=None):
     return (callback or flask.jsonify)(
         lines=lines
     )
+
+@app.route('/match-data')
+def match_data():
+    if conf.get('station', 'none') == 'none':
+        return flask.jsonify(error='No station specified')
+    match_name = conf.get('match_name', '')
+    if not match_name:
+        return flask.jsonify(error='No match specified')
+    path = util.abspath('match-data', match_name + '.json')
+    try:
+        with open(path) as f:
+            raw_data = json.load(f)
+    except (IOError, ValueError) as e:
+        return flask.jsonify(error='Could not load match data: %s' % e)
+    data = {}
+    station = conf.get('station')
+    for k, v in raw_data.items():
+        if not isinstance(v, dict):
+            return flask.jsonify(error='Bad match entry (%s)' % k)
+        elif station not in raw_data[k]:
+            return flask.jsonify(error='Match %s missing team ID for %s' % (k, station))
+        else:
+            data[k] = raw_data[k][station]
+    return flask.jsonify(data)
