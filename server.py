@@ -139,3 +139,9 @@ def match_data():
         else:
             data[k] = raw_data[k][station]
     return flask.jsonify(data)
+
+@app.route('/shutdown')
+def shutdown():
+    request.environ.get('werkzeug.server.shutdown')()
+    return 'shutdown'
+
