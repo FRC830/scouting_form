@@ -48,12 +48,12 @@ config = ConfigFile('config.txt')
 class ConfigForm(flask_wtf.Form):
     def __init__(self, *args, **kwargs):
         super(ConfigForm, self).__init__(*args, **kwargs)
-        match_names = [('', '')]
+        event_names = [('', '')]
         for f in os.listdir(util.abspath('match_schedules')):
             name, ext = os.path.splitext(f)
             if ext == '.json':
-                match_names.append((name, name))
-        self.match_name.choices = match_names
+                event_names.append((name, name))
+        self.event_name.choices = event_names
 
     computer_name = fields.StringField('Computer name',
         default=lambda: config.get('computer_name', None) or os.environ.get('COMPUTERNAME', None),
@@ -66,5 +66,5 @@ class ConfigForm(flask_wtf.Form):
             ['None'] + list(map(lambda item: ' '.join(map(str, item)),
                 itertools.product(['Red', 'Blue'], [1, 2, 3])))],
         default=lambda: config.get('station', None))
-    match_name = fields.SelectField('Event schedule',
-        choices=[], default=lambda: config.get('match_name', ''))
+    event_name = fields.SelectField('Event schedule',
+        choices=[], default=lambda: config.get('event_name', ''))

@@ -120,10 +120,10 @@ def stats(callback=None):
 def match_data():
     if conf.get('station', 'none') == 'none':
         return flask.jsonify(error='No station specified')
-    match_name = conf.get('match_name', '')
-    if not match_name:
+    event_name = conf.get('event_name', '')
+    if not event_name:
         return flask.jsonify(error='No match specified')
-    path = util.abspath('match_schedules', match_name + '.json')
+    path = util.abspath('match_schedules', event_name + '.json')
     try:
         with open(path) as f:
             raw_data = json.load(f)
