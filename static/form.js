@@ -66,7 +66,7 @@ $(function() {
                 $('#alert').show().attr({'class': 'alert alert-warning'}).text('Team ID not set to ' + expected);
         });
 
-        $.getJSON('/match-data', function(data) {
+        $.getJSON('/match_schedules', function(data) {
             if (data.error) {
                 if ($('form #alert').is(':hidden'))
                     $('form #alert').show().addClass('alert-danger').text(data.error);

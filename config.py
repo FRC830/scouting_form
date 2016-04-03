@@ -49,7 +49,7 @@ class ConfigForm(flask_wtf.Form):
     def __init__(self, *args, **kwargs):
         super(ConfigForm, self).__init__(*args, **kwargs)
         match_names = [('', '')]
-        for f in os.listdir(util.abspath('match-data')):
+        for f in os.listdir(util.abspath('match_schedules')):
             name, ext = os.path.splitext(f)
             if ext == '.json':
                 match_names.append((name, name))
@@ -66,5 +66,5 @@ class ConfigForm(flask_wtf.Form):
             ['None'] + list(map(lambda item: ' '.join(map(str, item)),
                 itertools.product(['Red', 'Blue'], [1, 2, 3])))],
         default=lambda: config.get('station', None))
-    match_name = fields.SelectField('Match name',
+    match_name = fields.SelectField('Event schedule',
         choices=[], default=lambda: config.get('match_name', ''))
