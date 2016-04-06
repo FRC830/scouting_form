@@ -50,3 +50,8 @@ label {
 textarea{
     width:100%;
 }
+/* For use mainly with radio fields */
+.horiz-align li, .horiz-align ul{
+    display: inline-block;
+    padding-right: 2em;
+}
