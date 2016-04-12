@@ -7,6 +7,7 @@ import time
 
 import config
 import exporter
+import schedule_fetcher
 import form_helper
 import util
 conf = config.config
@@ -74,6 +75,10 @@ def get_export_path():
 def export_form():
     return flask.render_template('export.html', default_path=get_export_path())
 
+@app.route('/schedule_loader')
+def load_schedule():
+    return flask.render_template('schedule_loader.html')
+
 @app.route('/export/<command>')
 def export_handler(command):
     def path_ok(path):
@@ -105,6 +110,14 @@ def export_handler(command):
             return flask.jsonify(ok=False, error=str(e))
     else:
         flask.abort(404)
+
+@app.route('/schedule_loader/<command>')
+def schedule_handler(command):
+    source = request.args.get('source')
+    filename = request.args.get('event')
+    result = schedule_fetcher.fetch(source, filename)
+    return flask.jsonify(res=result)
+
 
 @app.route('/stats')
 def stats(callback=None):
