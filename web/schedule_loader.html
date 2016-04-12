@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+<script src="/static/schedule_loader.js"></script>
+<h2>Load Event Schedule:</h2>
+<input type='text' value='Put URL here' id='source'/>
+</br>
+<input type='text' value='Event name' id='filename'/>
+</br>
+<a class="btn btn-default" href="#load">Fetch!</a>
+{% endblock %}

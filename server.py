@@ -114,7 +114,7 @@ def export_handler(command):
 @app.route('/schedule_loader/<command>')
 def schedule_handler(command):
     source = request.args.get('source')
-    filename = request.args.get('event')
+    filename = request.args.get('filename')
     result = schedule_fetcher.fetch(source, filename)
     return flask.jsonify(res=result)
 
