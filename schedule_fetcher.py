@@ -36,4 +36,6 @@ def fetch(source, filename):
     with open(save_path, 'w') as f:
         f.write(json.dumps(data))
     return "Schedule successfully fetched"
-    
+
+if __name__ == '__main__':
+    print(fetch(sys.argv[1], sys.argv[2]))
