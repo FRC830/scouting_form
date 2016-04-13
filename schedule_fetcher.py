@@ -14,11 +14,19 @@ def fetch(source, filename):
     save_path = os.path.join('match_schedules',filename+'.json')
     if os.path.exists(save_path):
         return "A file with that name already exists"
+    if not filename:
+        return "A file name must be provided"
 
     if source.startswith('http'):
-        src = urlopen(source).read()
+        try:
+            src = urlopen(source).read()
+        except:
+            return "Invalid URL"
     else:
-        src = open(source).read()
+        try:
+            src = open(source).read()
+        except FileNotFoundError:
+            return "Unable to load from file: "+source 
     b = bs4.BeautifulSoup(src,'html.parser')
     rows = b.find_all('tr', class_='hidden-xs')
 
@@ -33,9 +41,12 @@ def fetch(source, filename):
 
     if data == {}:
         return "No schedule data found on this URL. Check that it is in the format 'http://frc-events.usfirst.org/.../qualifications'"
-    with open(save_path, 'w') as f:
-        f.write(json.dumps(data))
-    return "Schedule successfully fetched"
+    try:
+        with open(save_path, 'w') as f:
+            f.write(json.dumps(data))
+    except OSError:
+        return "Invalid filename"
+    return "Schedule fetched successfully! Saved to: "+save_path
 
 if __name__ == '__main__':
     print(fetch(sys.argv[1], sys.argv[2]))

@@ -113,12 +113,10 @@ def export_handler(command):
 
 @app.route('/schedule_loader/load')
 def schedule_handler():
-    print("handling")
     source = request.args.get('source')
     filename = request.args.get('filename')
-    print(source, filename)
-    #result = schedule_fetcher.fetch(source, filename)
-    #return flask.jsonify(res=result)
+    result = schedule_fetcher.fetch(source, filename)
+    return flask.jsonify(res=result)
 
 
 @app.route('/stats')

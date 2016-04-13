@@ -2,9 +2,10 @@
 {% block body %}
 <script src="/static/schedule_loader.js"></script>
 <h2>Load Event Schedule:</h2>
-<input type='text' placeholder='Schedule URL' id='source'/>
-</br>
+<input type='text' placeholder='Schedule URL' id='source' style='width:50%'/>
 <input type='text' placeholder='Event name' id='filename'/>
 </br>
 <a class="btn btn-default" id="fetch">Fetch!</a>
+</br>
+<p id='result'></p>
 {% endblock %}
