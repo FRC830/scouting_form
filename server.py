@@ -118,7 +118,7 @@ def schedule_handler():
 
     success = False
     result = schedule_fetcher.fetch(source, filename)
-    if(type(result)==tuple):
+    if isinstance(result, tuple):
         result = result[0]
         success = result[1]
 

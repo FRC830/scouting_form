@@ -11,6 +11,9 @@ else:
 
 
 def fetch(source, filename):
+    if '\\' in filename:
+        return "Illegal character in filename: \\"
+
     save_path = os.path.join('match_schedules',filename+'.json')
     if os.path.exists(save_path):
         return "A file with that name already exists"
