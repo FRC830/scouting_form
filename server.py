@@ -115,8 +115,14 @@ def export_handler(command):
 def schedule_handler():
     source = request.args.get('source')
     filename = request.args.get('filename')
+
+    success = False
     result = schedule_fetcher.fetch(source, filename)
-    return flask.jsonify(res=result, success=result.startswith('Success'))
+    if(type(result)==tuple):
+        result = result[0]
+        success = result[1]
+
+    return flask.jsonify(res=result, success=success)
 
 
 @app.route('/stats')

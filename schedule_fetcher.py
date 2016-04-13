@@ -46,7 +46,7 @@ def fetch(source, filename):
             f.write(json.dumps(data))
     except OSError:
         return "Invalid filename"
-    return "Success! Schedule saved to: "+save_path
+    return "Success! Schedule saved to: "+save_path, True
 
 if __name__ == '__main__':
     print(fetch(sys.argv[1], sys.argv[2]))
