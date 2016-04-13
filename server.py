@@ -111,8 +111,9 @@ def export_handler(command):
     else:
         flask.abort(404)
 
-@app.route('/schedule_loader/<command>')
-def schedule_handler(command):
+@app.route('/schedule_loader/load')
+def schedule_handler():
+    print("handling")
     source = request.args.get('source')
     filename = request.args.get('filename')
     result = schedule_fetcher.fetch(source, filename)

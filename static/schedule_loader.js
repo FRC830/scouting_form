@@ -1,6 +1,6 @@
 $(function(){
-    $('a[href=#load]').click(function(){
-        $.getJSON('/schedule_loader/load', {source: $('#source').val(), name: $('#filename')}, function(data){
+    $('a#fetch').click(function(){
+        $.getJSON('/schedule_loader/load', {source: $('#source').val(), name: $('#filename').val()}, function(data){
             alert(data);
         });
     });
