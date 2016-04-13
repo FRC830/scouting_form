@@ -116,7 +116,7 @@ def schedule_handler():
     source = request.args.get('source')
     filename = request.args.get('filename')
     result = schedule_fetcher.fetch(source, filename)
-    return flask.jsonify(res=result)
+    return flask.jsonify(res=result, success=result.startswith('Success'))
 
 
 @app.route('/stats')
