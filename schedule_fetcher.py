@@ -57,7 +57,7 @@ def fetch(source, filename):
     except FetchError as e:
         return str(e), False
     except Exception as e:
-        return "An unknown error occurred: "+str(e),False
+        return "An unknown error occurred: [" + type(e).__name__ + "] " + str(e), False
     else:
         return "Success! Schedule saved to: "+save_path, True
 
