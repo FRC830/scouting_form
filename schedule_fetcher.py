@@ -6,6 +6,7 @@
 import bs4, json, sys, os
 if sys.version[0] == '2':
     from urllib2 import urlopen
+    FileNotFoundError = IOError #FileNotFoundError is not py2 compatible
 else:
     from urllib.request import urlopen
 
@@ -53,8 +54,10 @@ def fetch(source, filename):
                 f.write(json.dumps(data))
         except OSError:
             raise FetchError("Invalid filename")
-    except Exception as e:
+    except FetchError as e:
         return str(e), False
+    except Exception as e:
+        return "An unknown error occurred: "+str(e),False
     else:
         return "Success! Schedule saved to: "+save_path, True
 
