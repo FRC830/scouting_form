@@ -6,13 +6,11 @@
 import bs4, json, sys, os
 if sys.version[0] == '2':
     from urllib2 import urlopen
-    FileNotFoundError = IOError #FileNotFoundError is not py2 compatible
 else:
     from urllib.request import urlopen
 
 class FetchError(Exception):
     pass
-
 
 def fetch(source, filename):
     try:
@@ -33,7 +31,7 @@ def fetch(source, filename):
         else:
             try:
                 src = open(source).read()
-            except FileNotFoundError:
+            except IOError:
                 raise FetchError("Unable to load from file: "+source)
         b = bs4.BeautifulSoup(src,'html.parser')
         rows = b.find_all('tr', class_='hidden-xs')
@@ -62,4 +60,7 @@ def fetch(source, filename):
         return "Success! Schedule saved to: "+save_path, True
 
 if __name__ == '__main__':
-    print(fetch(sys.argv[1], sys.argv[2]))
+    if len(sys.argv) != 3:
+        print("Requires 2 command line arguments (schedule url, event name): %i given" %(len(sys.argv)-1))
+        sys.exit()
+    print(fetch(sys.argv[1], sys.argv[2])[0])
