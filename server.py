@@ -119,12 +119,8 @@ def schedule_handler():
     success = False
     result = schedule_fetcher.fetch(source, filename)
     if isinstance(result, tuple):
-        success = result[1]
-        result = result[0]
-        
-
-
-    return flask.jsonify(res=result, success=success)
+        message, success = result
+    return flask.jsonify(res=message, success=success)
 
 
 @app.route('/stats')
