@@ -5,6 +5,9 @@ import shutil
 import sys
 import time
 
+from Tkinter import Tk
+import tkFileDialog
+
 import config
 import exporter
 import schedule_fetcher
@@ -115,13 +118,17 @@ def export_handler(command):
 def schedule_handler():
     source = request.args.get('source')
     filename = request.args.get('filename')
-
     success = False
     result = schedule_fetcher.fetch(source, filename)
     if isinstance(result, tuple):
         message, success = result
     return flask.jsonify(res=message, success=success)
 
+@app.route('/schedule_loader/select')
+def schedule_select(): 
+	Tk().withdraw()
+	filename = tkFileDialog.askopenfilename()
+	return flask.jsonify(file=filename)
 
 @app.route('/stats')
 def stats(callback=None):
