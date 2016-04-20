@@ -2,11 +2,9 @@ import flask
 import json
 import os
 import shutil
+import subprocess
 import sys
 import time
-
-from Tkinter import Tk
-import tkFileDialog
 
 import config
 import exporter
@@ -125,10 +123,8 @@ def schedule_handler():
     return flask.jsonify(res=message, success=success)
 
 @app.route('/schedule_loader/select')
-def schedule_select(): 
-	Tk().withdraw()
-	filename = tkFileDialog.askopenfilename()
-	return flask.jsonify(file=filename)
+def schedule_select():
+	return flask.jsonify(file=subprocess.check_output([sys.executable, util.abspath('filedialog.py')]).strip())
 
 @app.route('/stats')
 def stats(callback=None):
