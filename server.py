@@ -76,7 +76,7 @@ def get_export_path():
 def export_form():
     return flask.render_template('export.html', default_path=get_export_path())
 
-@app.route('/schedule_loader')
+@app.route('/schedule')
 def load_schedule():
     return flask.render_template('schedule_loader.html')
 
@@ -112,7 +112,7 @@ def export_handler(command):
     else:
         flask.abort(404)
 
-@app.route('/schedule_loader/load')
+@app.route('/schedule/load')
 def schedule_handler():
     source = request.args.get('source')
     filename = request.args.get('filename')
@@ -122,21 +122,11 @@ def schedule_handler():
         message, success = result
     return flask.jsonify(res=message, success=success)
 
-@app.route('/schedule_loader/select')
+@app.route('/schedule/select')
 def schedule_select():
 	return flask.jsonify(file=subprocess.check_output([sys.executable, util.abspath('filedialog.py')]).strip())
 
-@app.route('/stats')
-def stats(callback=None):
-    lines = 0
-    if os.path.isfile(csv_path()):
-        with open(csv_path()) as f:
-            lines = max(0, len(f.readlines()) - 1)
-    return (callback or flask.jsonify)(
-        lines=lines
-    )
-
-@app.route('/match_schedules')
+@app.route('/schedule/current')
 def match_data():
     if conf.get('station', 'none') == 'none':
         return flask.jsonify(error='No station specified')
@@ -159,6 +149,16 @@ def match_data():
         else:
             data[k] = raw_data[k][station]
     return flask.jsonify(data)
+
+@app.route('/stats')
+def stats(callback=None):
+    lines = 0
+    if os.path.isfile(csv_path()):
+        with open(csv_path()) as f:
+            lines = max(0, len(f.readlines()) - 1)
+    return (callback or flask.jsonify)(
+        lines=lines
+    )
 
 @app.route('/shutdown')
 def shutdown():
