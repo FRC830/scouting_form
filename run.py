@@ -53,6 +53,8 @@ app.jinja_loader = jinja2.ChoiceLoader([
         abspath('..', 'web'),
     ]),
 ])
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 with open(sk_path, 'rb') as f:
     app.secret_key = f.read()
