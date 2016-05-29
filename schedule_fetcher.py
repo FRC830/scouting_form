@@ -3,7 +3,7 @@
 # URLs should come from http://frc-events.usfirst.org/...
 # example: "http://frc-events.usfirst.org/2016/MILAK/qualifications"
 
-import bs4, json, sys, os
+import bs5, json, sys, os
 if sys.version[0] == '2':
     from urllib2 import urlopen
 else:

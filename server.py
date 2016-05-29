@@ -8,7 +8,6 @@ import time
 
 import config
 import exporter
-import schedule_fetcher
 import form_helper
 import util
 conf = config.config
@@ -78,6 +77,10 @@ def export_form():
 
 @app.route('/schedule')
 def load_schedule():
+    try:
+        import schedule_fetcher
+    except ImportError:
+        return "Module bs4 not found"
     return flask.render_template('schedule_loader.html')
 
 @app.route('/export/<command>')
