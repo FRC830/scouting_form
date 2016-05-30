@@ -10,6 +10,5 @@ Creating a custom scouting form is simple
 2. Add this submodule to your repository  
     `git submodule add https://github.com/FRC830/scouting_form.git`   
 3. Copy the contents of the "example" folder from the submodule into your repository  
-	Your repository should now contain 5 things  
-	scouting_form, web, .gitignore, .gitmodules, and run.py  
-4. Modify the code in the "web" folder you just copied to customize your form
+	Your repository should now contain 5 things: scouting_form, web, .gitignore, .gitmodules, and run.py  
+4. Modify the code in the "web" folder to customize your form
