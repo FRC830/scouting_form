@@ -124,7 +124,7 @@ def schedule_handler():
 
 @app.route('/schedule/select')
 def schedule_select():
-	return flask.jsonify(file=subprocess.check_output([sys.executable, util.abspath('filedialog.py')]).strip())
+	return flask.jsonify(file=subprocess.check_output([sys.executable, util.abspath('filedialog.py')]).decode().strip())
 
 @app.route('/schedule/current')
 def match_data():
