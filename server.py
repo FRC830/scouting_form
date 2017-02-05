@@ -46,6 +46,8 @@ def form():
         for field in f:
             if field.type != "CSRFTokenField":
                 fieldnames.append(field.name)
+            else:
+                del f[field.name]
         exporter.save_data(fieldnames, f.data, csv_path())
         return flask.redirect('/form')
     return flask.render_template('form.html', form=f, conf=conf)
