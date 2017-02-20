@@ -3,11 +3,10 @@
 # URLs should come from http://frc-events.usfirst.org/...
 # example: "http://frc-events.usfirst.org/2016/MILAK/qualifications"
 
-import bs4, json, sys, os
-if sys.version[0] == '2':
-    from urllib2 import urlopen
-else:
-    from urllib.request import urlopen
+import requests, json, sys, os
+
+HEADER = {"X-TBA-App-Id":"frc830:scoutingform:v2017"}
+URL = "https://www.thebluealliance.com/api/v2/event/%s/matches"
 
 class FetchError(Exception):
     pass
@@ -23,33 +22,26 @@ def fetch(source, filename):
         if not filename:
             raise FetchError("A file name must be provided")
 
-        if source.startswith('http'):
-            try:
-                src = urlopen(source).read()
-            except:
-                raise FetchError("Invalid URL")
-        else:
-            try:
-                src = open(source).read()
-            except IOError:
-                raise FetchError("Unable to load from file: "+source)
-        b = bs4.BeautifulSoup(src,'html.parser')
-        rows = b.find_all('tr', class_='hidden-xs')
+        r = requests.get(URL %source, headers = HEADER)
+        data = r.json()
+        schedule = {}
 
-        data = {}
-        for i, r in enumerate(rows):
-            match_id = i + 1
-            data[match_id] = {}
-            for j, td in enumerate(r.find_all('td', class_='danger')):
-                data[match_id]['Red ' + str(j + 1)] = int(td.text)
-            for j, td in enumerate(r.find_all('td', class_='info')):
-                data[match_id]['Blue ' + str(j + 1)] = int(td.text)
+        for match in data:
+        	if match["comp_level"] != "qm":
+        		continue
+        	red = match["alliances"]["red"]["teams"]
+        	blue = match["alliances"]["blue"]["teams"]
+        	teams = {}
+        	for i in range (3):
+        		teams["Blue " + str(i+1)] = blue[i][3:]
+        		teams["Red " + str(i+1)] = red[i][3: ]
+        	schedule[match["match_number"]] = teams
 
-        if data == {}:
-            raise FetchError("No schedule data found on this URL. Check that it is in the format 'http://frc-events.usfirst.org/.../qualifications'")
+        if schedule == {}:
+            raise FetchError("No schedule data found on this URL.")
         try:
             with open(save_path, 'w') as f:
-                f.write(json.dumps(data))
+                f.write(json.dumps(schedule))
         except OSError:
             raise FetchError("Invalid filename")
     except FetchError as e:
@@ -61,6 +53,6 @@ def fetch(source, filename):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print("Requires 2 command line arguments (schedule url, event name): %i given" %(len(sys.argv)-1))
+        print("Requires 2 command line arguments (event code, event name): %i given" %(len(sys.argv)-1))
         sys.exit()
     print(fetch(sys.argv[1], sys.argv[2])[0])
