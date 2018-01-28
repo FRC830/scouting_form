@@ -55,7 +55,7 @@ app.jinja_loader = jinja2.ChoiceLoader([
 ])
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
-
+app.jinja_env.auto_reload = True
 with open(sk_path, 'rb') as f:
     app.secret_key = f.read()
 flask.current_app = app
