@@ -63,7 +63,12 @@ $(function() {
             if ($(this).val() == expected)
                 $('#alert').hide();
             else
-                $('#alert').show().attr({'class': 'alert alert-warning'}).text('Team ID not set to ' + expected);
+                $('#alert').show().attr({'class': 'alert alert-warning'}).text('Team ID not set to ' + expected + 
+                    " click to fix");
+        });
+        $("#alert").on('click', function() {
+            $("#team_id").val(match_data.data[$('#match_id').val()]);
+            $(this).hide();
         });
 
         $.getJSON('/schedule/current', function(data) {
