@@ -1,3 +1,5 @@
 #!/usr/bin/env python
 import os, sys
-os.execl(sys.executable, sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scouting_form', 'run.py'), *sys.argv[1:])
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'scouting_form'))
+from scouting_form.run import main
+main()
