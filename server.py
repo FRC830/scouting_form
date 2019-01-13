@@ -42,13 +42,17 @@ def form():
     if f.validate_on_submit():
     	# this will save data entered on the form to a new line in the csv file
     	# Ex: Red1_scouting_data.csv (if running on computer Red1)
-        fieldnames = []
-        for field in f:
-            if field.type != "CSRFTokenField":
-                fieldnames.append(field.name)
-            else:
-                del f[field.name]
-        exporter.save_data(fieldnames, f.data, csv_path())
+        # fieldnames = []
+
+        # for field in f:
+        #     print(field)
+        #     if field.type != "CSRFTokenField":
+        #         fieldnames.append(field.name)
+        #     else:
+        #         pass
+        #         #del f[field.name]
+
+        exporter.save_data(f.data.keys(), f.data, csv_path())
         return flask.redirect('/form')
     return flask.render_template('form.html', form=f, conf=conf)
 
