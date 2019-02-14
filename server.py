@@ -52,7 +52,8 @@ def form():
         #         pass
         #         #del f[field.name]
 
-        exporter.save_data(f.data.keys(), f.data, csv_path())
+        #exporter.save_data(f.data.keys(), f.data, csv_path())
+        exporter.save_data(list(f.data.keys()), f.data, csv_path())
         return flask.redirect('/form')
     return flask.render_template('form.html', form=f, conf=conf)
 
