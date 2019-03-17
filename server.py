@@ -86,6 +86,32 @@ def export_form():
 def load_schedule():
     return flask.render_template('schedule_loader.html')
 
+@app.route('/display')
+def display_data():
+    return flask.render_template('display_data.html')
+
+@app.route('/pitscouting')
+def pitscouting():
+    if not conf.get('computer_name', ''):
+        return flask.redirect(flask.url_for('config_form', return_to='/pitscouting'))
+    f = form_helper.load_form(os.path.join(os.getcwd(), '..', 'web', 'fields.py'))()
+    if f.validate_on_submit():
+    	# this will save data entered on the form to a new line in the csv file
+    	# Ex: Red1_scouting_data.csv (if running on computer Red1)
+        # fieldnames = []
+
+        # for field in f:
+        #     print(field)
+        #     if field.type != "CSRFTokenField":
+        #         fieldnames.append(field.name)
+        #     else:
+        #         pass
+        #         #del f[field.name]
+
+        exporter.save_data(f.data.keys(), f.data, csv_path())
+        return flask.redirect('/pitscouting')
+    return flask.render_template('pitts.html', form=f)
+
 @app.route('/export/<command>')
 def export_handler(command):
     def path_ok(path):
